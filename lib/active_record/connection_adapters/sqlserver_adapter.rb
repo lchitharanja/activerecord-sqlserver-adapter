@@ -169,6 +169,8 @@ module ActiveRecord
         case @connection_options[:mode]
         when :dblib
           @connection.close rescue nil
+        when :odbc
+          @connection.disconnect rescue nil
         end
         @connection = nil
         @spid = nil
@@ -356,6 +358,8 @@ module ActiveRecord
         @connection = case config[:mode]
                       when :dblib
                         dblib_connect(config)
+                      when :odbc
+                        odbc_connect(config)
                       end
         @spid = _raw_select('SELECT @@SPID', fetch: :rows).first.first
         @version_year = version_year
@@ -365,6 +369,7 @@ module ActiveRecord
       def connection_errors
         @connection_errors ||= [].tap do |errors|
           errors << TinyTds::Error if defined?(TinyTds::Error)
+          errors << ODBC::Error if defined?(ODBC::Error)
         end
       end
 
@@ -397,6 +402,25 @@ module ActiveRecord
           client.execute('SET IMPLICIT_TRANSACTIONS OFF').do
           client.execute('SET TEXTSIZE 2147483647').do
           client.execute('SET CONCAT_NULL_YIELDS_NULL ON').do
+        end
+      end
+
+      def odbc_connect(config)
+        if config[:dsn].include?(';')
+          driver = ODBC::Driver.new.tap do |d|
+            d.name = config[:dsn_name] || 'Driver1'
+            d.attrs = config[:dsn].split(';').map { |atr| atr.split('=') }.reject { |kv| kv.size != 2 }.reduce({}) { |a, e| k, v = e ; a[k] = v ; a }
+          end
+          ODBC::Database.new.drvconnect(driver)
+        else
+          ODBC.connect config[:dsn], config[:username], config[:password]
+        end.tap do |c|
+          begin
+            c.use_time = true
+            c.use_utc = ActiveRecord::Base.default_timezone == :utc
+          rescue Exception
+            warn 'Ruby ODBC v0.99992 or higher is required.'
+          end
         end
       end
 

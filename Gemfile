@@ -51,6 +51,10 @@ group :tinytds do
   end
 end
 
+group :odbc do
+  gem 'ruby-odbc'
+end
+
 group :development do
   gem 'byebug'
   gem 'mocha'
