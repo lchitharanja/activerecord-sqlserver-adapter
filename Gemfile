@@ -2,7 +2,7 @@ require 'openssl'
 source 'https://rubygems.org'
 gemspec
 
-gem 'sqlite3'
+#gem 'sqlite3'
 gem 'minitest', '< 5.3.4'
 gem 'bcrypt'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
@@ -52,7 +52,8 @@ group :tinytds do
 end
 
 group :odbc do
-  gem 'ruby-odbc'
+  gem 'ruby-odbc', :git => 'https://github.com/cloudvolumes/ruby-odbc.git', :tag => '0.100.cv', :require => 'false', :platforms => [:mingw, :x64_mingw, :mswin]
+  #gem 'ruby-odbc'
 end
 
 group :development do

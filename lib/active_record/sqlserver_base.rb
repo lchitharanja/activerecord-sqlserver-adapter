@@ -11,6 +11,7 @@ module ActiveRecord
         raise ArgumentError, 'Missing :dsn configuration.' unless config.key?(:dsn)
         require 'odbc'
         require 'active_record/connection_adapters/sqlserver/core_ext/odbc'
+        require 'active_record/tasks/sqlserver_database_tasks'
       else
         raise ArgumentError, "Unknown connection mode in #{config.inspect}."
       end
