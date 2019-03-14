@@ -24,13 +24,15 @@ module ActiveRecord
         end
 
         def exec_delete(sql, name, binds)
-          sql = sql.dup << '; SELECT @@ROWCOUNT AS AffectedRows'
-          super(sql, name, binds).rows.first.first
+          #sql = sql.dup << '; SELECT @@ROWCOUNT AS AffectedRows'
+          #super(sql, name, binds).rows.first.first
+          super.rows.first.try(:first) || super("SELECT @@ROWCOUNT As AffectedRows", "", []).rows.first.try(:first)
         end
 
         def exec_update(sql, name, binds)
-          sql = sql.dup << '; SELECT @@ROWCOUNT AS AffectedRows'
-          super(sql, name, binds).rows.first.first
+          #sql = sql.dup << '; SELECT @@ROWCOUNT AS AffectedRows'
+          #super(sql, name, binds).rows.first.first
+          super.rows.first.try(:first) || super("SELECT @@ROWCOUNT As AffectedRows", "", []).rows.first.try(:first)
         end
 
         def supports_statement_cache?
