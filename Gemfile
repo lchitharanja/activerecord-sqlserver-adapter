@@ -52,7 +52,7 @@ group :tinytds do
 end
 
 group :odbc do
-  gem 'ruby-odbc', :git => 'https://github.com/cloudvolumes/ruby-odbc.git', :tag => '0.101.cv'
+  gem 'ruby-odbc', :git => 'https://github.com/cloudvolumes/ruby-odbc.git', :tag => '0.100.cv'
 end
 
 group :development do

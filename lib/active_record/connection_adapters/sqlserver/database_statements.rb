@@ -28,13 +28,15 @@ module ActiveRecord
         end
 
         def exec_delete(sql, name, binds)
-          sql << '; SELECT @@ROWCOUNT AS AffectedRows'
-          super.rows.first.first
+          #sql << '; SELECT @@ROWCOUNT AS AffectedRows'
+          #super.rows.first.first
+          super.rows.first.try(:first) || super("SELECT @@ROWCOUNT As AffectedRows", "", []).rows.first.try(:first)
         end
 
         def exec_update(sql, name, binds)
-          sql << '; SELECT @@ROWCOUNT AS AffectedRows'
-          super.rows.first.first
+          #sql << '; SELECT @@ROWCOUNT AS AffectedRows'
+          #super.rows.first.first
+          super.rows.first.try(:first) || super("SELECT @@ROWCOUNT As AffectedRows", "", []).rows.first.try(:first)
         end
 
         def supports_statement_cache?
@@ -208,11 +210,21 @@ module ActiveRecord
             table_name = query_requires_identity_insert?(sql)
             pk = primary_key(table_name)
           end
+
           sql = if pk && self.class.use_output_inserted && !database_prefix_remote_server?
                   quoted_pk = SQLServer::Utils.extract_identifiers(pk).quoted
                   sql.insert sql.index(/ (DEFAULT )?VALUES/), " OUTPUT INSERTED.#{quoted_pk}"
                 else
-                  "#{sql}; SELECT CAST(SCOPE_IDENTITY() AS bigint) AS Ident"
+                  #"#{sql}; SELECT CAST(SCOPE_IDENTITY() AS bigint) AS Ident"
+                  #sql.dup.sub!(" VALUES(", " OUTPUT Inserted.ID VALUES(")
+                  table = sql.match('^INSERT.*?\[(.*?)\]').try(:[], 1)
+                  id_col = table ? primary_key(table.to_s.strip) : nil
+                  output = id_col ? "INSERTED.#{id_col}, " : ''
+                  if id_col.blank?
+                    sql.dup.sub!(" VALUES(", " OUTPUT Inserted.ID VALUES (")
+                  else
+                    sql.dup.sub!(" VALUES(", " OUTPUT CAST(COALESCE(#{output}@@IDENTITY, SCOPE_IDENTITY()) AS bigint) AS Ident VALUES (")
+                  end
                 end
           super
         end
