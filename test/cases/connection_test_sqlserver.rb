@@ -69,7 +69,7 @@ class ConnectionTestSQLServer < ActiveRecord::TestCase
 
     it 'insert with identity closes statement' do
       assert_all_odbc_statements_used_are_closed do
-        connection.exec_insert "INSERT INTO accounts ([id],[firm_id],[credit_limit]) VALUES (999, 1, 50)", "SQL", []
+        connection.execute "INSERT INTO accounts ([id],[firm_id],[credit_limit]) VALUES (999, 1, 50)", "SQL"
       end
     end
 
