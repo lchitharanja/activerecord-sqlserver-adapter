@@ -621,8 +621,8 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'nchar(10)'
       col.type.must_equal               :nchar
       col.null.must_equal               true
-      #col.default.must_equal            '12345678åå'
-      #obj.nchar_10.must_equal           '12345678åå'
+      col.default.must_equal            '12345678åå'
+      obj.nchar_10.must_equal           '12345678åå'
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
       type.must_be_instance_of          Type::UnicodeChar
@@ -631,9 +631,10 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.scale.must_be_nil
       # Basic set and save.
       obj.nchar_10 = "五六"
-      #obj.nchar_10.strip.must_equal         "五六"
-      #obj.save!
-      #obj.reload.nchar_10.strip.must_equal  "五六"
+      obj.nchar_10.strip.must_equal         "五六"
+      obj.save!
+      obj.reload.nchar_10.strip.must_equal  "五六"
+      #assert_obj_set_and_save :nchar_10, "五六"
     end
 
     it 'nvarchar(50)' do
@@ -641,8 +642,8 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'nvarchar(50)'
       col.type.must_equal               :string
       col.null.must_equal               true
-      #col.default.must_equal            'test nvarchar_50 åå'
-      #obj.nvarchar_50.must_equal        'test nvarchar_50 åå'
+      col.default.must_equal            'test nvarchar_50 åå'
+      obj.nvarchar_50.must_equal        'test nvarchar_50 åå'
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
       type.must_be_instance_of          Type::UnicodeVarchar
@@ -650,7 +651,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.precision.must_be_nil
       type.scale.must_be_nil
       # Basic set and save.
-      #assert_obj_set_and_save :nvarchar_50, "一二34五六"
+      assert_obj_set_and_save :nvarchar_50, "一二34五六"
     end
 
     it 'nvarchar(max)' do
@@ -658,8 +659,8 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'nvarchar(max)'
       col.type.must_equal               :text
       col.null.must_equal               true
-      #col.default.must_equal            'test nvarchar_max åå'
-      #obj.nvarchar_max.must_equal       'test nvarchar_max åå'
+      col.default.must_equal            'test nvarchar_max åå'
+      obj.nvarchar_max.must_equal       'test nvarchar_max åå'
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
       type.must_be_instance_of          Type::UnicodeVarcharMax
@@ -667,7 +668,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.precision.must_be_nil
       type.scale.must_be_nil
       # Basic set and save.
-      #assert_obj_set_and_save :nvarchar_max, "一二34五六"
+      assert_obj_set_and_save :nvarchar_max, "一二34五六"
     end
 
     it 'ntext' do
@@ -675,8 +676,8 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'ntext'
       col.type.must_equal               :ntext
       col.null.must_equal               true
-      #col.default.must_equal            'test ntext åå'
-      #obj.ntext.must_equal              'test ntext åå'
+      col.default.must_equal            'test ntext åå'
+      obj.ntext.must_equal              'test ntext åå'
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
       type.must_be_instance_of          Type::UnicodeText
@@ -684,7 +685,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.precision.must_be_nil
       type.scale.must_be_nil
       # Basic set and save.
-      #assert_obj_set_and_save :ntext, "一二34五六"
+      assert_obj_set_and_save :ntext, "一二34五六"
     end
 
     # Binary Strings
@@ -748,7 +749,11 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.scale.must_be_nil
       # Basic set and save.
       binary_data.encoding.must_equal Encoding::BINARY
-      assert_obj_set_and_save :varbinary_max, binary_data
+      obj.varbinary_max = binary_data
+      obj.varbinary_max.must_equal binary_data
+      obj.save!
+      obj.reload.varbinary_max.must_equal binary_data.unpack("H*").first.upcase
+      #assert_obj_set_and_save :varbinary_max, binary_data
     end
 
     # Other Data Types

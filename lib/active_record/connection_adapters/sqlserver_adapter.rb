@@ -1,5 +1,6 @@
 require 'base64'
 require 'active_record'
+require 'odbc_utf8'
 require 'arel_sqlserver'
 require 'active_record/connection_adapters/abstract_adapter'
 require 'active_record/connection_adapters/sqlserver/core_ext/active_record'
@@ -306,7 +307,7 @@ module ActiveRecord
         register_class_with_limit m, %r{\Anvarchar}i,     SQLServer::Type::UnicodeVarchar
         m.alias_type                 'string',            'nvarchar(4000)'
         m.register_type              'nvarchar(max)',     SQLServer::Type::UnicodeVarcharMax.new
-        m.register_type              'nvarchar(max)',     SQLServer::Type::UnicodeVarcharMax.new
+
         m.register_type              'ntext',             SQLServer::Type::UnicodeText.new
         # Binary Strings
         register_class_with_limit m, %r{\Abinary}i,       SQLServer::Type::Binary

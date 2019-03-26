@@ -41,10 +41,10 @@ CREATE TABLE [sst_datatypes] (
   [varchar_max] [varchar](max) NULL DEFAULT 'test varchar_max',
   [text] [text] NULL DEFAULT 'test text',
   -- Unicode Character Strings
-  [nchar_10] [nchar](10) NULL,
-  [nvarchar_50] [nvarchar](50) NULL,
-  [nvarchar_max] [nvarchar](max) NULL,
-  [ntext] [ntext] NULL,
+  [nchar_10] [nchar](10) NULL DEFAULT N'12345678åå',
+  [nvarchar_50] [nvarchar](50) NULL DEFAULT N'test nvarchar_50 åå',
+  [nvarchar_max] [nvarchar](max) NULL DEFAULT N'test nvarchar_max åå',
+  [ntext] [ntext] NULL DEFAULT N'test ntext åå',
   -- Binary Strings
   [binary_49] [binary](49) NULL,
   [varbinary_49] [varbinary](49) NULL,
