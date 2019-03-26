@@ -221,9 +221,9 @@ module ActiveRecord
                   id_col = table ? primary_key(table.to_s.strip) : nil
                   output = id_col ? "INSERTED.#{id_col}, " : ''
                   if id_col.blank?
-                    sql.dup.sub!(" VALUES(", " OUTPUT Inserted.ID VALUES (")
+                    sql = sql.sub(" VALUES(", " OUTPUT Inserted.ID VALUES (")
                   else
-                    sql.dup.sub!(" VALUES(", " OUTPUT CAST(COALESCE(#{output}@@IDENTITY, SCOPE_IDENTITY()) AS bigint) AS Ident VALUES (")
+                    sql = sql.sub(" VALUES(", " OUTPUT CAST(COALESCE(#{output}@@IDENTITY, SCOPE_IDENTITY()) AS bigint) AS Ident VALUES (")
                   end
                 end
           super
