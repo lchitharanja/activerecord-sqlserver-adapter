@@ -98,7 +98,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'bit'
       col.type.must_equal               :boolean
       col.null.must_equal               true
-      col.default.must_equal            true
+      col.default.must_equal            1
       obj.bit.must_equal                true
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -119,7 +119,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'decimal(9,2)'
       col.type.must_equal               :decimal
       col.null.must_equal               true
-      col.default.must_equal            BigDecimal('12345.01')
+      col.default.must_equal            '12345.01'
       obj.decimal_9_2.must_equal        BigDecimal('12345.01')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -136,7 +136,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
     it 'decimal(16,4)' do
       col = column('decimal_16_4')
       col.sql_type.must_equal           'decimal(16,4)'
-      col.default.must_equal            BigDecimal('1234567.89')
+      col.default.must_equal            '1234567.8900'
       obj.decimal_16_4.must_equal       BigDecimal('1234567.89')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -153,7 +153,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'numeric(18,0)'
       col.type.must_equal               :decimal
       col.null.must_equal               true
-      col.default.must_equal            BigDecimal('191')
+      col.default.must_equal            '191'
       obj.numeric_18_0.must_equal       BigDecimal('191')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -172,7 +172,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'numeric(36,2)'
       col.type.must_equal               :decimal
       col.null.must_equal               true
-      col.default.must_equal            BigDecimal('12345678901234567890.01')
+      col.default.must_equal            '12345678901234567890.01'
       obj.numeric_36_2.must_equal       BigDecimal('12345678901234567890.01')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -191,7 +191,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'money'
       col.type.must_equal               :money
       col.null.must_equal               true
-      col.default.must_equal            BigDecimal('4.20')
+      col.default.must_equal            '4.2000'
       obj.money.must_equal              BigDecimal('4.20')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
@@ -210,7 +210,7 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'smallmoney'
       col.type.must_equal               :smallmoney
       col.null.must_equal               true
-      col.default.must_equal            BigDecimal('4.20')
+      col.default.must_equal            '4.2000'
       obj.smallmoney.must_equal         BigDecimal('4.20')
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
