@@ -55,11 +55,11 @@ group :odbc do
   gem 'ruby-odbc', :git => 'https://github.com/cloudvolumes/ruby-odbc.git', :tag => '0.101.cv'
 end
 
-group :development do
+# group :development, :test do
   gem 'byebug'
   gem 'mocha'
   gem 'minitest-spec-rails'
-end
+# end
 
 group :guard do
   gem 'guard'

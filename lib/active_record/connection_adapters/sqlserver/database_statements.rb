@@ -16,6 +16,7 @@ module ActiveRecord
         end
 
         def exec_query(sql, name = 'SQL', binds = [], prepare: false)
+          puts "Inside exec_query"
           sp_executesql(sql, name, binds, prepare: prepare)
         end
 
@@ -230,6 +231,7 @@ module ActiveRecord
         end
 
         def sp_executesql(sql, name, binds, options = {})
+          puts "Inside sp_executesql......"
           options[:ar_result] = true if options[:fetch] != :rows
           unless without_prepared_statement?(binds)
             types, params = sp_executesql_types_and_parameters(binds)
@@ -324,6 +326,7 @@ module ActiveRecord
         end
 
         def _raw_select(sql, options = {})
+          puts "Inside _raw_select ........"
           handle = raw_connection_run(sql)
           handle_to_names_and_values(handle, options)
         ensure
@@ -348,6 +351,7 @@ module ActiveRecord
         end
 
         def handle_to_names_and_values(handle, options = {})
+          puts "Inside handle_to_names_and_values ..........."
           case @connection_options[:mode]
           when :dblib
             handle_to_names_and_values_dblib(handle, options)
@@ -361,13 +365,25 @@ module ActiveRecord
             qo[:timezone] = ActiveRecord::Base.default_timezone || :utc
             qo[:as] = (options[:ar_result] || options[:fetch] == :rows) ? :array : :hash
           end
+
+          puts "handle class #{handle.class}"
+          puts "handle super classes #{handle.class.ancestors }"
           results = handle.each(query_options)
           columns = lowercase_schema_reflection ? handle.fields.map { |c| c.downcase } : handle.fields
-          options[:ar_result] ? ActiveRecord::Result.new(columns, results) : results
+          puts "options: #{options}"
+
+          results = options[:ar_result] ? ActiveRecord::Result.new(columns, results) : results
+          puts "results: #{results}"
+          results
         end
 
         def handle_to_names_and_values_odbc(handle, options = {})
           @connection.use_utc = ActiveRecord::Base.default_timezone == :utc
+          puts "options: #{options}"
+          puts "handle class #{handle.class}"
+          puts "handle super class #{handle.class.superclass}"
+          puts "handle super classes #{handle.class.ancestors}"
+
           if options[:ar_result]
             columns = lowercase_schema_reflection ? handle.columns(true).map { |c| c.name.downcase } : handle.columns(true).map { |c| c.name }
             rows = handle.fetch_all || []
@@ -377,7 +393,9 @@ module ActiveRecord
             when :all
               handle.each_hash || []
             when :rows
-              handle.fetch_all || []
+              a = handle.fetch_all || []
+              puts "handle.fetch_all #{a}"
+              a
             end
           end
         end

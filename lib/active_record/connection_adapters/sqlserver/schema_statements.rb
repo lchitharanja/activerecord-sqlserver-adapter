@@ -355,8 +355,11 @@ module ActiveRecord
           binds << Relation::QueryAttribute.new('TABLE_NAME', identifier.object, nv128)
           binds << Relation::QueryAttribute.new('TABLE_SCHEMA', identifier.schema, nv128) unless identifier.schema.blank?
           results = sp_executesql(sql, 'SCHEMA', binds)
+
           results.map do |ci|
             ci = ci.symbolize_keys
+            puts 'Before constructing ci..'
+            puts ci
             ci[:_type] = ci[:type]
             ci[:table_name] = view_tblnm || table_name
             ci[:type] = case ci[:type]
@@ -387,22 +390,36 @@ module ActiveRecord
               end
               case default
               when nil
+                puts 'When the default is nil'
                 [nil, nil]
               when /\A\((\w+\(\))\)\Z/
+                puts "When the default is /\A\((\w+\(\))\)\Z/"
                 default_function = Regexp.last_match[1]
                 [nil, default_function]
               when /\A\(N'(.*)'\)\Z/m
+                puts "When the default is /\A\(N'(.*)'\)\Z/m"
+
                 string_literal = SQLServer::Utils.unquote_string(Regexp.last_match[1])
                 [string_literal, nil]
               when /CREATE DEFAULT/mi
+                puts "When the default is /CREATE DEFAULT/mi"
+
                 [nil, nil]
               else
+                puts 'When the default else case'
+
                 type = case ci[:type]
                        when /smallint|int|bigint/ then ci[:_type]
                        else ci[:type]
                        end
                 value = default.match(/\A\((.*)\)\Z/m)[1]
+                puts "Query that is constructed to find value: " + "SELECT CAST(#{value} AS #{type}) AS value"
                 value = select_value "SELECT CAST(#{value} AS #{type}) AS value", 'SCHEMA'
+                puts "type: #{type}"
+                puts "value: #{value}"
+                puts "value class: #{value.class}"
+
+                puts [value, nil]
                 [value, nil]
               end
             end
@@ -410,6 +427,8 @@ module ActiveRecord
             ci.delete(:is_nullable)
             ci[:is_primary] = ci[:is_primary].to_i == 1
             ci[:is_identity] = ci[:is_identity].to_i == 1 unless [TrueClass, FalseClass].include?(ci[:is_identity].class)
+            puts ci
+            puts "--------"
             ci
           end
         end
