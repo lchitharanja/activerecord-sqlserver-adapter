@@ -208,11 +208,19 @@ module ActiveRecord
             table_name = query_requires_identity_insert?(sql)
             pk = primary_key(table_name)
           end
+
           sql = if pk && self.class.use_output_inserted && !database_prefix_remote_server?
                   quoted_pk = SQLServer::Utils.extract_identifiers(pk).quoted
                   sql.insert sql.index(/ (DEFAULT )?VALUES/), " OUTPUT INSERTED.#{quoted_pk}"
                 else
-                  "#{sql}; SELECT CAST(SCOPE_IDENTITY() AS bigint) AS Ident"
+                  table = get_table_name(sql)
+                  id_column = identity_columns(table.to_s.strip).first
+                  if !id_column.blank?
+                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT Inserted.#{id_column.name} VALUES (")
+                  else
+                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT CAST(SCOPE_IDENTITY() AS bigint) AS Ident VALUES (")
+                  end
+                  sql
                 end
           super
         end
