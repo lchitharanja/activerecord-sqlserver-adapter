@@ -215,16 +215,14 @@ module ActiveRecord
                   quoted_pk = SQLServer::Utils.extract_identifiers(pk).quoted
                   sql.insert sql.index(/ (DEFAULT )?VALUES/), " OUTPUT INSERTED.#{quoted_pk}"
                 else
-                  #"#{sql}; SELECT CAST(SCOPE_IDENTITY() AS bigint) AS Ident"
-                  #sql.dup.sub!(" VALUES(", " OUTPUT Inserted.ID VALUES(")
-                  table = sql.match('^INSERT.*?\[(.*?)\]').try(:[], 1)
-                  id_col = table ? primary_key(table.to_s.strip) : nil
-                  output = id_col ? "INSERTED.#{id_col}, " : ''
-                  if id_col.blank?
-                    sql = sql.sub(" VALUES(", " OUTPUT Inserted.ID VALUES (")
+                  table = get_table_name(sql)
+                  id_column = identity_columns(table.to_s.strip).first
+                  if !id_column.blank?
+                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT Inserted.#{id_column.name} VALUES (")
                   else
-                    sql = sql.sub(" VALUES(", " OUTPUT CAST(COALESCE(#{output}@@IDENTITY, SCOPE_IDENTITY()) AS bigint) AS Ident VALUES (")
+                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT CAST(SCOPE_IDENTITY() AS bigint) AS Ident VALUES (")
                   end
+                  sql
                 end
           super
         end
