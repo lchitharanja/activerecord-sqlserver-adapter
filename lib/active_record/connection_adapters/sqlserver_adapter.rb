@@ -1,5 +1,6 @@
 require 'base64'
 require 'active_record'
+require 'odbc_utf8'
 require 'arel_sqlserver'
 require 'active_record/connection_adapters/abstract_adapter'
 require 'active_record/connection_adapters/sqlserver/core_ext/active_record'
