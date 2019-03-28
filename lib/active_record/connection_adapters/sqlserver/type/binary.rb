@@ -4,6 +4,10 @@ module ActiveRecord
       module Type
         class Binary < ActiveRecord::Type::Binary
 
+          def cast_value(value)
+            value.force_encoding(Encoding::BINARY) =~ /[^[:xdigit:]]/ ? value : [value].pack('H*')
+          end
+
           def type
             :binary_basic
           end
