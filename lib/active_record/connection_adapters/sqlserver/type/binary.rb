@@ -5,7 +5,11 @@ module ActiveRecord
         class Binary < ActiveRecord::Type::Binary
 
           def cast_value(value)
-            value.force_encoding(Encoding::BINARY) =~ /[^[:xdigit:]]/ ? value : [value].pack('H*')
+            if value.class.to_s == 'String' and !value.frozen?
+              value.force_encoding(Encoding::BINARY) =~ /[^[:xdigit:]]/ ? value : [value].pack('H*')
+            else
+              value
+            end
           end
 
           def type
