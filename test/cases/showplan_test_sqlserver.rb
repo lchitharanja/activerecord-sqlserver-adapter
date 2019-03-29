@@ -34,7 +34,9 @@ class ShowplanTestSQLServer < ActiveRecord::TestCase
       with_showplan_option('SHOWPLAN_TEXT') do
         plan = Car.where(id: 1).explain
         plan.must_include "SELECT [cars].* FROM [cars] WHERE [cars].[id]"
-        plan.must_include "Clustered Index Seek", 'make sure we do not showplan the sp_executesql'
+        if connection_options[:mode] == :dblib
+          plan.must_include "Clustered Index Seek", 'make sure we do not showplan the sp_executesql'
+        end
       end
     end
 
