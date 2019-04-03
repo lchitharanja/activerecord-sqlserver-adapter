@@ -214,11 +214,10 @@ module ActiveRecord
                   table = get_table_name(sql)
                   id_column = identity_columns(table.to_s.strip).first
                   if !id_column.blank?
-                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT Inserted.#{id_column.name} VALUES (")
+                    sql.sub(/\s*VALUES\s*\(/, " OUTPUT INSERTED.#{id_column.name} VALUES (")
                   else
-                    sql = sql.sub(/\s*VALUES\s*\(/, " OUTPUT CAST(SCOPE_IDENTITY() AS bigint) AS Ident VALUES (")
+                    sql.sub(/\s*VALUES\s*\(/, " OUTPUT CAST(SCOPE_IDENTITY() AS bigint) AS Ident VALUES (")
                   end
-                  sql
                 end
           super
         end
