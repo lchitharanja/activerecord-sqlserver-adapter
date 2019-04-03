@@ -273,8 +273,8 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       col.sql_type.must_equal           'date'
       col.type.must_equal               :date
       col.null.must_equal               true
-      col.default.must_equal            connection_dblib_73? ? Date.civil(0001, 1, 1) : '0001-01-01'
-      obj.date.must_equal               Date.civil(0001, 1, 1)
+      col.default.must_equal            Date.civil(1900, 1, 1)
+      obj.date.must_equal               Date.civil(1900, 1, 1)
       col.default_function.must_be_nil
       type = connection.lookup_cast_type_from_column(col)
       type.must_be_instance_of          Type::Date
@@ -282,19 +282,19 @@ class ColumnTestSQLServer < ActiveRecord::TestCase
       type.precision.must_be_nil
       type.scale.must_be_nil
       # Can cast strings. SQL Server format.
-      obj.date = '04-01-0001'
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date = '04-01-1900'
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       obj.save!
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       obj.reload
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       # Can cast strings. ISO format.
-      obj.date = '0001-04-01'
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date = '1900-04-01'
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       obj.save!
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       obj.reload
-      obj.date.must_equal               Date.civil(0001, 4, 1)
+      obj.date.must_equal               Date.civil(1900, 4, 1)
       # Can keep and return assigned date.
       assert_obj_set_and_save :date, Date.civil(1972, 04, 14)
       # Can accept and cast time objects.
