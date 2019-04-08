@@ -23,7 +23,7 @@ CREATE TABLE [sst_datatypes] (
   [float] [float] NULL DEFAULT 123.00000001,
   [real] [real] NULL DEFAULT 123.45,
   -- Date and Time
-  [date] [date] NULL DEFAULT '0001-01-01',
+  [date] [date] NULL DEFAULT '1900-01-01',
   [datetime] [datetime] NULL DEFAULT '1753-01-01T00:00:00.123',
   [datetime2_7] [datetime2](7) NULL DEFAULT '9999-12-31 23:59:59.9999999',
   [datetime2_3] [datetime2](3) NULL,
