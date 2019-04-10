@@ -208,9 +208,11 @@ module ActiveRecord
                   if exclude_output_inserted
                     id_sql_type = exclude_output_inserted.is_a?(TrueClass) ? 'bigint' : exclude_output_inserted
                     <<-SQL.strip_heredoc
+                      SET NOCOUNT ON
                       DECLARE @ssaIdInsertTable table (#{quoted_pk} #{id_sql_type});
                       #{sql.dup.insert sql.index(/ (DEFAULT )?VALUES/), " OUTPUT INSERTED.#{quoted_pk} INTO @ssaIdInsertTable"}
-                      SELECT CAST(#{quoted_pk} AS #{id_sql_type}) FROM @ssaIdInsertTable
+                      SELECT CAST(#{quoted_pk} AS #{id_sql_type}) FROM @ssaIdInsertTable;
+                      SET NOCOUNT OFF
                     SQL
                   else
                     sql.dup.insert sql.index(/ (DEFAULT )?VALUES/), " OUTPUT INSERTED.#{quoted_pk}"
